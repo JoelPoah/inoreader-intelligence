@@ -1,0 +1,64 @@
+ Yes, you can run python3 run_example.py, but you have several options depending on what you want to
+  do:
+
+  🚀 Running Options:
+
+  Option 1: Example Script (Interactive)
+
+  python3 run_example.py
+  - Walks you through the full setup process
+  - Handles OAuth authentication interactively
+  - Generates a report and asks if you want to start the scheduler
+
+  Option 2: CLI Commands (Recommended)
+
+  # First time setup and authentication
+  python3 run_cli.py setup
+
+  # Generate a single report from Focus folder
+  python3 run_cli.py generate --focus --email
+
+  # Generate from all feeds
+  python3 run_cli.py generate --all --email
+
+  # Start daily scheduler
+  python3 run_cli.py schedule --time "08:00" --start
+
+  Option 3: Test the System First
+
+  # Test if everything is working
+  python3 test_focus_folder.py
+
+  # Test configuration
+  python3 test_system.py
+
+  📋 Recommended First-Time Workflow:
+
+  1. Test the system:
+  python3 test_system.py
+  2. Check Focus folder:
+  python3 test_focus_folder.py
+  3. Run initial setup:
+  python3 run_cli.py setup
+  4. Generate your first report:
+  python3 run_cli.py generate --focus --email
+
+  ⚠️ Important Notes:
+
+  - Environment setup: Make sure you run with the correct PATH:
+  export PATH="/home/joel/.local/bin:$PATH"
+  PYTHONPATH=/home/joel/Inoreader/src python3 run_example.py
+  - Focus folder: The system now defaults to using your Focus folder, so make sure you have one set up
+   in Inoreader with your important feeds.
+
+  🎯 Quick Start:
+
+  If you just want to get started immediately:
+  python3 run_example.py
+
+  This will handle everything for you interactively!
+
+# Start daily scheduler
+python3 run_cli.py schedule --time "10:00" --start
+
+2200 utc is 0600 for SG time.

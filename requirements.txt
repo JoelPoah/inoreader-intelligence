@@ -1,0 +1,12 @@
+requests>=2.31.0
+aiohttp>=3.8.0
+beautifulsoup4>=4.12.0
+lxml>=4.9.0
+python-dotenv>=1.0.0
+jinja2>=3.1.0
+weasyprint>=59.0
+apscheduler>=3.10.0
+openai>=1.0.0
+pydantic>=2.0.0
+typer>=0.9.0
+rich>=13.0.0
