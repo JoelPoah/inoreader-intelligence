@@ -1,0 +1,14 @@
+{
+  "version": 2,
+  "functions": {
+    "api/submit-email.js": {
+      "maxDuration": 30
+    },
+    "api/health.js": {
+      "maxDuration": 10
+    },
+    "api/stats.js": {
+      "maxDuration": 30
+    }
+  }
+}

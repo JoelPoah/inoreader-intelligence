@@ -1,0 +1,30 @@
+{
+  "name": "strategic-intelligence-email-collector",
+  "version": "1.0.0",
+  "description": "Minimalist email collection app for Strategic Intelligence updates",
+  "type": "module",
+  "scripts": {
+    "build": "echo 'No build step required'",
+    "dev": "vercel dev",
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "mongoose": "^7.5.0"
+  },
+  "devDependencies": {
+    "@vercel/node": "^3.0.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "keywords": [
+    "email",
+    "collection",
+    "strategic",
+    "intelligence",
+    "mongodb",
+    "serverless"
+  ],
+  "author": "Strategic Intelligence Team",
+  "license": "MIT"
+}

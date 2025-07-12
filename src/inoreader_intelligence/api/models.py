@@ -46,18 +46,37 @@ class Article:
     
     def get_inoreader_url(self) -> str:
         """Get Inoreader URL to view this article in Inoreader"""
-        # Inoreader uses hex encoding for article IDs in URLs
-        # Convert decimal ID to hex for URL
+        import urllib.parse
+        
+        # Try the original hex ID method first
         try:
             # Extract numeric part from ID like "tag:google.com,2005:reader/item/0000000012345"
             if "item/" in self.id:
                 numeric_id = self.id.split("item/")[-1]
-                # Convert to hex and format for Inoreader URL
-                hex_id = hex(int(numeric_id))[2:]  # Remove '0x' prefix
-                return f"https://www.inoreader.com/article/{hex_id}"
-            return self.url  # Fallback to original URL
-        except:
-            return self.url  # Fallback to original URL
+                # Check if it's all digits
+                if numeric_id.isdigit():
+                    # Convert to hex and format for Inoreader URL
+                    hex_id = hex(int(numeric_id))[2:]  # Remove '0x' prefix
+                    return f"https://www.inoreader.com/article/{hex_id}"
+                else:
+                    print(f"Warning: Article ID numeric part contains non-digits: {numeric_id}")
+            else:
+                print(f"Warning: Article ID does not contain 'item/': {self.id}")
+        except ValueError as e:
+            print(f"Error converting article ID {self.id} to int: {e}")
+        except Exception as e:
+            print(f"Unexpected error with article ID {self.id}: {e}")
+        
+        # Fallback: Use global search with first few words of title
+        if hasattr(self, 'title') and self.title:
+            # Extract first few meaningful words from title for better search
+            words = self.title.split()[:4]  # Take first 4 words
+            search_query = ' '.join(words)
+            # URL encode the search query
+            encoded_query = urllib.parse.quote(search_query)
+            return f"https://www.inoreader.com/search/global/{encoded_query}"
+        
+        return self.url  # Final fallback to original URL
     
     def get_full_content(self) -> str:
         """Get the full content with fallback to summary"""

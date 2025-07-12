@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Strategic Intelligence - Stay Updated</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="hero">
+            <div class="hero-content">
+                <h1>📊 Strategic Intelligence</h1>
+                <p class="subtitle">Stay ahead with curated geopolitical insights and strategic analysis</p>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="form-section">
+                <h2>Get Exclusive Updates</h2>
+                <p class="description">
+                    Join our community to receive weekly intelligence reports, 
+                    strategic analysis, and exclusive insights directly to your inbox.
+                </p>
+
+                <form id="email-form" class="email-form">
+                    <div class="input-group">
+                        <label for="email" class="sr-only">Email address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Enter your email address"
+                            required
+                            autocomplete="email"
+                        >
+                        <button type="submit" id="submit-btn">
+                            <span class="btn-text">Subscribe</span>
+                            <div class="loading-spinner" style="display: none;"></div>
+                        </button>
+                    </div>
+                </form>
+
+                <div id="success-message" class="success-message" style="display: none;">
+                    <div class="success-icon">✅</div>
+                    <h3>Thank you for subscribing!</h3>
+                    <p>You'll receive our next intelligence report soon.</p>
+                </div>
+
+                <div id="error-message" class="error-message" style="display: none;">
+                    <div class="error-icon">❌</div>
+                    <p>Something went wrong. Please try again.</p>
+                </div>
+            </div>
+
+            <div class="support-section">
+                <h3>Support Our Work</h3>
+                <p>Help us continue providing quality strategic intelligence</p>
+                <a href="https://coff.ee/p0oh" target="_blank" rel="noopener noreferrer" class="coffee-btn">
+                    <img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" 
+                         alt="Buy Me a Coffee" 
+                         class="coffee-img">
+                </a>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>&copy; 2025 Strategic Intelligence. All rights reserved.</p>
+            <p class="privacy-note">We respect your privacy. No spam, unsubscribe anytime.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

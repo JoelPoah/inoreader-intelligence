@@ -12,7 +12,7 @@ HTML_TEMPLATE = """
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
             color: #333;
-            max-width: 800px;
+            max-width: 1000px;
             margin: 0 auto;
             padding: 20px;
             background-color: #f5f5f5;
@@ -21,7 +21,10 @@ HTML_TEMPLATE = """
             background-color: white;
             padding: 30px;
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 10px rgba(0,0,0.1);
+            height: auto;
+            min-height: auto;
+            overflow: visible;
         }
         h1 {
             color: #2c3e50;
@@ -48,6 +51,14 @@ HTML_TEMPLATE = """
             border-left: 4px solid #27ae60;
             font-size: 1.05em;
             line-height: 1.7;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            height: auto;
+            min-height: auto;
+            max-height: none;
+            overflow: visible;
+            display: block;
         }
         .theme-overview::before {
             content: "📊 STRATEGIC ANALYSIS";
@@ -81,6 +92,11 @@ HTML_TEMPLATE = """
             padding: 10px;
             background-color: #f8f9fa;
             border-left: 3px solid #3498db;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            height: auto;
+            overflow: visible;
         }
         .article-content {
             color: #2c3e50;
@@ -90,6 +106,11 @@ HTML_TEMPLATE = """
             background-color: #fff;
             border: 1px solid #e9ecef;
             border-radius: 4px;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            white-space: normal;
+            height: auto;
+            overflow: visible;
         }
         .article-links {
             font-size: 0.9em;
@@ -167,17 +188,12 @@ HTML_TEMPLATE = """
                 {{ article.summary|safe }}
             </div>
             
-            <div class="article-content">
-                <strong>📄 Full Content:</strong><br>
-                {{ article.full_content|safe }}
-            </div>
-            
             <div class="article-links">
-                {% if article.inoreader_url != article.url %}
-                <a href="{{ article.inoreader_url }}" target="_blank" class="inoreader-link">📖 View in Inoreader</a> |
+                {% if article.inoreader_url %}
+                <a href="{{ article.inoreader_url }}" target="_blank" class="inoreader-link">📖 Read in Inoreader</a>
                 {% endif %}
                 {% if article.url %}
-                <a href="{{ article.url }}" target="_blank" class="source-link">🔗 Original Source</a>
+                {% if article.inoreader_url %} | {% endif %}<a href="{{ article.url }}" target="_blank" class="source-link">🔗 Original Source</a>
                 {% endif %}
             </div>
         </div>
