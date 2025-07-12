@@ -1,23 +1,60 @@
 # Inoreader Intelligence Reports
 
-A Python application that generates daily intelligence reports from your RSS feeds using Inoreader's API. Transform your RSS feeds into structured, AI-powered intelligence briefings.
+A Python application that generates daily intelligence reports from your RSS feeds using Inoreader's API and AI-powered analysis. Transform your RSS feeds into structured, military-focused intelligence briefings for DIS scholarship preparation.
 
 ## 🚀 Features
 
 - **🔐 OAuth Authentication**: Secure integration with Inoreader API
-- **🧠 AI-Powered Summarization**: Uses OpenAI GPT to generate concise article summaries
-- **📊 Thematic Categorization**: Automatically groups articles by themes (Geopolitics, Cybersecurity, Technology, etc.)
+- **🧠 AI-Powered Analysis**: Uses OpenAI GPT-4 for strategic intelligence summaries and categorization
+- **📊 Military-Focused Themes**: Automatically categorizes articles into 7 analytical themes relevant to defense and intelligence
 - **📄 Multiple Export Formats**: Generate reports in HTML, PDF, or Markdown
-- **📧 Email Delivery**: Automatically send reports to your email
-- **⏰ Daily Scheduling**: Set up automated daily report generation
-- **🖥️ CLI Interface**: Easy-to-use command-line interface
+- **📧 Email Delivery**: Automatically send reports with HTML content and PDF attachments
+- **⏰ Singapore Time Scheduling**: Daily automated reports at 06:00 SGT
+- **🎯 Focus Folder Optimization**: Efficiently processes only your curated Focus folder feeds
+- **🔗 Inoreader Integration**: Direct links to view full articles in your Inoreader account
+
+## 📊 Intelligence Themes
+
+The system categorizes articles into these military/intelligence analytical themes:
+
+1. **🌍 Geopolitical Tensions** - Great power competition, regional conflicts, diplomatic relations
+2. **🔒 Cybersecurity Warfare** - Nation-state APTs, critical infrastructure attacks, information warfare
+3. **⚡ Emerging Tech** - AI/quantum computing, autonomous weapons, space militarization, semiconductors
+4. **🛡️ National Security** - Terrorism, biosecurity, homeland protection, extremist threats
+5. **⚔️ Military Modernization** - Defense procurement, hybrid warfare, alliance activities
+6. **⚖️ Rules-Based Order** - UN actions, international law, sovereignty issues
+7. **🔮 Strategic Foresight** - Climate security, demographic shifts, future threat indicators
+
+> **Note**: Articles not relevant to military/intelligence analysis (sports, entertainment, local news) are automatically excluded.
 
 ## 📋 Requirements
 
 - Python 3.8+
 - Inoreader account with API access
-- OpenAI API key (optional, for AI summarization)
-- Email account for report delivery (optional)
+- OpenAI API key (for AI analysis and categorization)
+- Email account for report delivery
+- Focus folder setup in your Inoreader account
+
+## 🎯 How the Focus Folder System Works
+
+The system is optimized for efficiency - it **only fetches articles from your Focus folder**, not all your feeds:
+
+### Efficient Focus Folder Flow:
+1. **Find Focus Folder** → API call to get your folder list
+2. **Fetch ONLY Focus Articles** → Direct API call to Focus folder contents (~100 articles)
+3. **Process & Analyze** → Clean content, categorize, and generate AI summaries
+
+### Performance Benefits:
+- ✅ **40x faster**: Downloads ~100 Focus articles instead of ~4,100 from all feeds
+- ✅ **Lower costs**: Reduced API usage and OpenAI token consumption  
+- ✅ **Higher quality**: Curated content from your Focus folder
+- ✅ **Smart pagination**: Handles >100 articles when needed
+
+### Content Quality:
+- **Full Article Content**: Uses complete "coffee cup" content from webpages when available
+- **HTML Cleaning**: Strips formatting to get clean text for AI analysis
+- **Fallback Support**: Uses RSS summaries if full content unavailable
+- **Length Optimization**: Truncates at 4,000 characters for optimal AI processing
 
 ## 🛠️ Installation
 
@@ -33,22 +70,27 @@ pip install -r requirements.txt
 ```
 
 3. **Configure environment variables**:
-Edit `.env` file with your credentials:
+Copy `.env.example` to `.env` and fill in your credentials:
 ```env
 INOREADER_APP_ID=your_app_id
 INOREADER_APP_KEY=your_app_key
 
 # Multiple email recipients (comma-separated)
-EMAIL_RECIPIENTS=user1@gmail.com,user2@company.com,user3@example.com
+EMAIL_RECIPIENTS=user1@gmail.com,user2@company.com
 
-# OpenAI API Key (optional)
+# OpenAI Configuration
 OPENAI_API_KEY=your_openai_api_key
+OPENAI_MODEL=gpt-4
 
-# Email Configuration (optional)
+# Email Configuration
 SMTP_SERVER=smtp.gmail.com
 SMTP_PORT=587
 SMTP_USERNAME=your_email@gmail.com
 SMTP_PASSWORD=your_app_password
+
+# Optional: Pagination for large Focus folders
+USE_PAGINATION=true
+MAX_DAILY_ARTICLES=200
 ```
 
 4. **Install the package**:
@@ -58,102 +100,76 @@ pip install -e .
 
 ## 🚀 Quick Start
 
-### 1. Initial Setup
+### 1. Setup Your Focus Folder in Inoreader
+- Create a folder called "Focus" in your Inoreader account
+- Add your most important intelligence/military news feeds to this folder
+- The system will only process articles from this folder
+
+### 2. Initial Authentication
 ```bash
-inoreader-intelligence setup
+python3 run_example.py
 ```
+This will:
+- Authenticate with Inoreader (opens browser for OAuth)
+- Generate your first intelligence report
+- Send it via email if configured
 
-### 2. Generate Your First Report
+### 3. Daily Automated Reports at 06:00 SGT
+
+**Start the scheduler for daily 06:00 Singapore Time reports:**
 ```bash
-inoreader-intelligence generate --format html --email
-```
-
-### 3. Schedule Daily Reports
-```bash
-inoreader-intelligence schedule --time "08:00" --timezone "UTC" --start
-```
-
-## 📖 Usage
-
-### Command Line Interface
-
-**Setup and authenticate**:
-```bash
-inoreader-intelligence setup
-```
-
-**List your feeds**:
-```bash
-inoreader-intelligence feeds
-```
-
-**List your tags/folders**:
-```bash
-inoreader-intelligence tags
-```
-
-**Generate a report**:
-```bash
-inoreader-intelligence generate --format pdf --email
-```
-
-**Test the system**:
-```bash
-inoreader-intelligence test
-```
-
-### Python API
-
-```python
-from inoreader_intelligence.main import InoreaderIntelligence
-
-# Initialize
+python3 -c "
+from src.inoreader_intelligence import InoreaderIntelligence
 app = InoreaderIntelligence()
 app.setup()
-
-# Generate report
-report_path = app.generate_report(
-    format="html",
-    send_email=True
-)
-
-# Start scheduler
-app.start_scheduler(time="08:00", timezone="UTC")
+app.start_scheduler(time='06:00', timezone='Asia/Singapore')
+print('Daily reports scheduled for 06:00 SGT')
+input('Press Enter to stop scheduler...')
+"
 ```
 
-### Example Script
-
-Run the included example:
+**Alternative method using the CLI:**
 ```bash
-python run_example.py
+# Create a simple scheduler script
+cat > start_scheduler.py << 'EOF'
+from src.inoreader_intelligence import InoreaderIntelligence
+
+app = InoreaderIntelligence()
+app.setup()
+app.start_scheduler(time="06:00", timezone="Asia/Singapore")
+print("📅 Daily intelligence reports scheduled for 06:00 Singapore Time")
+print("📧 Reports will be emailed automatically")
+print("Press Ctrl+C to stop...")
+
+try:
+    import time
+    while True:
+        time.sleep(60)
+except KeyboardInterrupt:
+    print("Scheduler stopped")
+EOF
+
+python3 start_scheduler.py
 ```
 
-## 🔧 Configuration
+### 4. Generate Manual Reports
+```bash
+# Generate HTML report with email delivery
+python3 run_example.py
 
-### Environment Variables
+# Generate PDF report only
+python3 -c "
+from src.inoreader_intelligence import InoreaderIntelligence
+app = InoreaderIntelligence()
+app.setup()
+report = app.generate_report(format='pdf', send_email=False)
+print(f'PDF report: {report}')
+"
+```
 
-| Variable | Required | Description |
-|----------|----------|-------------|
-| `INOREADER_APP_ID` | Yes | Your Inoreader app ID |
-| `INOREADER_APP_KEY` | Yes | Your Inoreader app key |
-| `EMAIL_RECIPIENTS` | Yes | Email addresses for reports (comma-separated) |
-| `EMAIL_RECIPIENT` | Yes | Single email address (fallback for EMAIL_RECIPIENTS) |
-| `OPENAI_API_KEY` | Optional | For AI summarization |
-| `SMTP_SERVER` | Optional | Email server for sending reports |
-| `SMTP_USERNAME` | Optional | Email username |
-| `SMTP_PASSWORD` | Optional | Email password |
-| `USE_PAGINATION` | Optional | Enable pagination for >100 articles (true/false) |
-| `MAX_DAILY_ARTICLES` | Optional | Maximum articles to process daily (default: 100) |
+## 📧 Email Configuration
 
-### Report Formats
-
-- **HTML**: Rich, styled reports perfect for email
-- **PDF**: Professional documents for archiving
-- **Markdown**: Plain text format for integration
-
-## 📧 SMTP Email Setup
-
-### Gmail Configuration
+### Gmail Setup (Recommended)
 
 1. **Enable 2-Factor Authentication** in your Google account
 2. **Generate App Password**:
@@ -168,135 +184,69 @@ SMTP_USERNAME=your.email@gmail.com
 SMTP_PASSWORD=your_16_char_app_password
 ```
 
-### Outlook/Hotmail Configuration
-
+### Multiple Recipients
 ```env
-SMTP_SERVER=smtp-mail.outlook.com
-SMTP_PORT=587
-SMTP_USERNAME=your.email@outlook.com
-SMTP_PASSWORD=your_account_password
+# Send to multiple people (comma-separated)
+EMAIL_RECIPIENTS=analyst1@ministry.gov.sg,analyst2@ministry.gov.sg,team@defense.gov.sg
 ```
 
-### Yahoo Mail Configuration
+### What You'll Receive
+- **HTML email** with immediate report viewing
+- **PDF attachment** with full content for offline reading
+- **Inoreader links** to view articles in your account
+- **Original source links** for non-subscribers
 
-1. **Enable App Passwords** in Yahoo Account Security
-2. **Generate App Password** for mail applications
-3. **Configuration**:
+## 🔧 Configuration Options
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `INOREADER_APP_ID` | required | Your Inoreader application ID |
+| `INOREADER_APP_KEY` | required | Your Inoreader application key |
+| `EMAIL_RECIPIENTS` | required | Comma-separated email list |
+| `OPENAI_API_KEY` | required | OpenAI API key for AI analysis |
+| `OPENAI_MODEL` | `gpt-4` | OpenAI model (gpt-4, gpt-4-turbo, etc.) |
+| `SMTP_SERVER` | `smtp.gmail.com` | Email server |
+| `SMTP_PORT` | `587` | Email server port |
+| `USE_PAGINATION` | `false` | Handle >100 articles in Focus folder |
+| `MAX_DAILY_ARTICLES` | `100` | Maximum articles to process |
+
+### Pagination for Large Focus Folders
+
+If your Focus folder has >100 articles daily:
 ```env
-SMTP_SERVER=smtp.mail.yahoo.com
-SMTP_PORT=587
-SMTP_USERNAME=your.email@yahoo.com
-SMTP_PASSWORD=your_app_password
-```
-
-### Corporate/Custom SMTP
-
-```env
-SMTP_SERVER=mail.yourcompany.com
-SMTP_PORT=587  # Common ports: 25, 465, 587, 2525
-SMTP_USERNAME=your.username
-SMTP_PASSWORD=your_password
-```
-
-### Multiple Email Recipients
-
-Configure multiple recipients using comma-separated values:
-
-```env
-# Single recipient
-EMAIL_RECIPIENTS=user@example.com
-
-# Multiple recipients
-EMAIL_RECIPIENTS=user1@gmail.com,user2@company.com,user3@yahoo.com
-
-# Mix personal and work emails
-EMAIL_RECIPIENTS=personal@gmail.com,work@company.com,team@organization.org
-```
-
-### Troubleshooting Email Issues
-
-**Common Problems**:
-
-1. **"Authentication failed"** - Check username/password and app passwords
-2. **"Connection refused"** - Verify SMTP server and port
-3. **"SSL/TLS errors"** - Try different ports (587 for STARTTLS, 465 for SSL)
-4. **"Blocked by provider"** - Enable "less secure apps" or use app passwords
-
-**Test Email Configuration**:
-```bash
-# Test your email setup
-python3 run_cli.py test
-```
-
-## 📄 Pagination Support
-
-### Handle Large Article Volumes
-
-The system supports pagination to process more than 100 articles when your Focus folder has high volume.
-
-### Configuration Options
-
-**Environment Variables**:
-```env
-# Enable pagination
 USE_PAGINATION=true
 MAX_DAILY_ARTICLES=300
 ```
 
-**CLI Options**:
-```bash
-# Generate report with pagination (up to 200 articles)
-python3 run_cli.py generate --focus --paginate --max-articles 200
-
-# Large reports (up to 500 articles)
-python3 run_cli.py generate --focus --paginate --max-articles 500 --email
-```
-
-### Pagination Benefits
-
-- ✅ **Process unlimited articles** from Focus folder
-- ✅ **Configurable limits** to control processing costs
-- ✅ **Automatic page handling** with continuation tokens
-- ✅ **Progress tracking** during multi-page fetches
-- ✅ **Cost control** with maximum article limits
-
-### Usage Examples
-
-```bash
-# Standard: 100 articles (no pagination)
-python3 run_cli.py generate --focus
-
-# Medium: 200 articles with pagination  
-python3 run_cli.py generate --focus --paginate --max-articles 200
-
-# Large: 500 articles with pagination
-python3 run_cli.py generate --focus --paginate --max-articles 500
-
-# Test pagination functionality
-python3 test_pagination.py
-```
-
-## 🤖 AI Features
-
-When configured with an OpenAI API key, the system provides:
-
-- **Smart Summarization**: Concise summaries of lengthy articles
-- **Thematic Analysis**: AI-powered categorization of articles
-- **Theme Summaries**: Overview of key trends per category
-
-Without an API key, the system uses:
-- Simple text truncation for summaries
-- Keyword-based categorization
-- Basic statistics
-
 ## 📊 Report Structure
 
-Each report includes:
+Each intelligence report includes:
 
-1. **Summary Statistics**: Article count and theme breakdown
-2. **Thematic Sections**: Articles grouped by category
-3. **Article Summaries**: Key insights from each article
-4. **Source Links**: Direct links to original articles
+1. **📈 Executive Summary**: Article count and theme breakdown
+2. **📊 Strategic Analysis**: AI-generated thematic overviews with trends and implications
+3. **📄 Full Article Content**: Complete article text with AI analysis
+4. **🔗 Access Links**: 
+   - 📖 Inoreader links for subscribers
+   - 🔗 Original source links
+5. **📱 Professional Formatting**: Clean layout optimized for both screen and print
+
+## 🕐 Singapore Time Scheduling
+
+The system is configured for Singapore operations:
+
+### Default Schedule
+- **Time**: 06:00 Singapore Time (Asia/Singapore timezone)
+- **Frequency**: Daily
+- **Delivery**: Automatic email with HTML + PDF attachment
+
+### Custom Scheduling
+```python
+# Different times (still Singapore timezone)
+app.start_scheduler(time="08:00", timezone="Asia/Singapore")  # 8 AM SGT
+app.start_scheduler(time="18:00", timezone="Asia/Singapore")  # 6 PM SGT
+```
 
 ## 🗂️ Project Structure
 
@@ -304,23 +254,67 @@ Each report includes:
 inoreader-intelligence/
 ├── src/inoreader_intelligence/
 │   ├── auth/              # OAuth authentication
-│   ├── api/               # Inoreader API client
-│   ├── summarizer/        # AI summarization engine
+│   ├── api/               # Inoreader API client  
+│   ├── summarizer/        # AI analysis engine
 │   ├── reporter/          # Report generation
 │   ├── scheduler/         # Daily scheduling
-│   ├── cli.py            # Command-line interface
 │   └── main.py           # Main application
 ├── requirements.txt       # Dependencies
-├── setup.py              # Package setup
-├── .env                  # Environment variables
-└── run_example.py        # Example usage
+├── .env.example          # Configuration template
+├── run_example.py        # Quick start script
+└── README.md            # This file
 ```
 
-## 🔒 Security
+## 🔒 Security Features
 
-- API keys are stored securely in environment variables
-- OAuth tokens are saved locally and refreshed automatically
-- No sensitive data is logged or transmitted unnecessarily
+- **OAuth 2.0 Authentication**: Secure token-based access to Inoreader
+- **Environment Variables**: API keys stored securely in .env files
+- **Automatic Token Refresh**: Handles expired tokens transparently
+- **Content Filtering**: Only processes curated Focus folder content
+- **No Sensitive Logging**: Credentials never appear in logs
+
+## 🚧 Troubleshooting
+
+### Common Issues
+
+1. **"No articles found"**
+   - Ensure your Focus folder contains feeds
+   - Check if Focus folder has recent articles
+   - Verify folder name is exactly "Focus"
+
+2. **Email delivery fails**
+   - Verify SMTP credentials and app passwords
+   - Check recipient email addresses
+   - Test with single recipient first
+
+3. **Authentication errors**
+   - Verify Inoreader API credentials
+   - Check if OAuth tokens need refresh
+   - Ensure correct app permissions
+
+4. **Empty reports**
+   - Verify OpenAI API key is valid
+   - Check if articles match intelligence themes
+   - Review content filtering settings
+
+### Test Commands
+```bash
+# Test email configuration
+python3 -c "
+from src.inoreader_intelligence.delivery import EmailDelivery
+from src.inoreader_intelligence.config import Config
+delivery = EmailDelivery(Config.from_env())
+print('Email test - check configuration')
+"
+
+# Test Inoreader connection
+python3 -c "
+from src.inoreader_intelligence import InoreaderIntelligence
+app = InoreaderIntelligence()
+app.setup()
+print('Inoreader connection successful')
+"
+```
 
 ## 🤝 Contributing
 
@@ -337,24 +331,27 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 🆘 Support
 
 For issues and questions:
-1. Check the documentation
-2. Search existing issues
-3. Create a new issue with detailed information
+1. Check this documentation
+2. Review the troubleshooting section
+3. Create an issue with detailed information
 
-## 🚧 Development
+---
 
-To set up for development:
+**⚡ Quick Command Reference**
 
 ```bash
-# Install development dependencies
-pip install -e ".[dev]"
+# Setup and first run
+python3 run_example.py
 
-# Run tests
-pytest
+# Start daily 06:00 SGT scheduler
+python3 start_scheduler.py
 
-# Format code
-black .
-
-# Type checking
-mypy src/
+# Manual report generation
+python3 -c "from src.inoreader_intelligence import InoreaderIntelligence; app = InoreaderIntelligence(); app.setup(); print(app.generate_report(send_email=True))"
 ```
+
+**🎯 Optimized for DIS Scholarship Preparation**
+- Focuses on military and intelligence themes
+- Filters out irrelevant content automatically  
+- Provides strategic analysis and trend insights
+- Scheduled for Singapore timezone operations

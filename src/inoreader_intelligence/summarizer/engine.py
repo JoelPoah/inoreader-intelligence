@@ -72,7 +72,7 @@ class SummarizationEngine:
         return result.strip() or text[:max_length] + "..."
     
     def categorize_articles(self, articles: List[Article]) -> Dict[str, List[Article]]:
-        """Group articles by themes/categories"""
+        """Group articles by themes/categories, excluding irrelevant content"""
         if not self.client:
             return self._simple_categorization(articles)
         
@@ -82,10 +82,13 @@ class SummarizationEngine:
         for article in articles:
             try:
                 category = self._get_article_category(article)
-                categories[category].append(article)
+                # Only include articles that fit into our analytical themes
+                if category and category != "Uncategorized":
+                    categories[category].append(article)
+                # Skip articles that don't fit our military/intelligence themes
             except Exception as e:
                 print(f"Error categorizing article {article.id}: {e}")
-                categories["Uncategorized"].append(article)
+                # Don't add to any category if categorization fails
         
         return dict(categories)
     
@@ -98,7 +101,7 @@ class SummarizationEngine:
             messages=[
                 {
                     "role": "system",
-                    "content": "You are an intelligence analyst for DIS scholarship preparation. Categorize the following article into one of these analytical themes: Geopolitical Tensions, Cybersecurity Warfare, Emerging Tech, National Security, Military Modernization, Rules-Based Order, or Strategic Foresight. Respond with only the category name."
+                    "content": "You are an intelligence analyst for DIS scholarship preparation. Categorize the following article into one of these analytical themes: Geopolitical Tensions, Cybersecurity Warfare, Emerging Tech, National Security, Military Modernization, Rules-Based Order, or Strategic Foresight. If the article is not relevant to military/intelligence analysis (e.g., sports, entertainment, local news, celebrity gossip), respond with 'IRRELEVANT'. Otherwise, respond with only the category name."
                 },
                 {
                     "role": "user",
@@ -153,6 +156,10 @@ class SummarizationEngine:
             "asean": "Geopolitical Tensions"
         }
         
+        # Filter out irrelevant content
+        if category.lower() in ["irrelevant", "other", "uncategorized", "none"]:
+            return None
+        
         return category_map.get(category.lower(), category)
     
     def _simple_categorization(self, articles: List[Article]) -> Dict[str, List[Article]]:
@@ -179,8 +186,8 @@ class SummarizationEngine:
                     categorized = True
                     break
             
-            if not categorized:
-                categories["Uncategorized"].append(article)
+            # Skip articles that don't match any military/intelligence themes
+            # Don't add to "Uncategorized" - just exclude them completely
         
         return dict(categories)
     

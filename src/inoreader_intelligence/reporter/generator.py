@@ -25,8 +25,7 @@ class ReportGenerator:
         "National Security": "🛡️",
         "Military Modernization": "⚔️",
         "Rules-Based Order": "⚖️",
-        "Strategic Foresight": "🔮",
-        "Uncategorized": "📄"
+        "Strategic Foresight": "🔮"
     }
     
     def __init__(self, config: Config):
@@ -85,7 +84,9 @@ class ReportGenerator:
                 article_data.append({
                     "title": article.title,
                     "summary": self._convert_markdown_to_html(article.summary or "No summary available"),
+                    "full_content": self._convert_markdown_to_html(article.get_full_content()),
                     "url": article.url,
+                    "inoreader_url": article.get_inoreader_url(),
                     "feed_title": article.feed_title,
                     "published": article.published.strftime("%Y-%m-%d %H:%M"),
                     "author": article.author or "Unknown"

@@ -43,6 +43,27 @@ class Article:
             read="read" in data.get("categories", []),
             starred="starred" in data.get("categories", [])
         )
+    
+    def get_inoreader_url(self) -> str:
+        """Get Inoreader URL to view this article in Inoreader"""
+        # Inoreader uses hex encoding for article IDs in URLs
+        # Convert decimal ID to hex for URL
+        try:
+            # Extract numeric part from ID like "tag:google.com,2005:reader/item/0000000012345"
+            if "item/" in self.id:
+                numeric_id = self.id.split("item/")[-1]
+                # Convert to hex and format for Inoreader URL
+                hex_id = hex(int(numeric_id))[2:]  # Remove '0x' prefix
+                return f"https://www.inoreader.com/article/{hex_id}"
+            return self.url  # Fallback to original URL
+        except:
+            return self.url  # Fallback to original URL
+    
+    def get_full_content(self) -> str:
+        """Get the full content with fallback to summary"""
+        if self.content and len(self.content.strip()) > len(self.summary.strip()):
+            return self.content
+        return self.summary
 
 
 @dataclass

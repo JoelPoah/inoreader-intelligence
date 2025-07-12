@@ -13,6 +13,7 @@ from .summarizer import SummarizationEngine
 from .reporter import ReportGenerator
 from .delivery import EmailDelivery
 from .scheduler import ReportScheduler
+from .web_subscribers import WebSubscriberManager
 
 
 class InoreaderIntelligence:
@@ -25,6 +26,7 @@ class InoreaderIntelligence:
         self.reporter = ReportGenerator(self.config)
         self.delivery = EmailDelivery(self.config)
         self.scheduler = ReportScheduler(self.config)
+        self.web_subscribers = WebSubscriberManager(self.config)
     
     def setup(self) -> None:
         """Set up the application"""
@@ -77,14 +79,20 @@ class InoreaderIntelligence:
         
         # Send email if requested
         if send_email:
+            # Get combined recipients (config + web subscribers)
+            all_recipients = self.web_subscribers.get_combined_recipients()
+            
             if format == "html":
-                self.delivery.send_html_report(report_path)
+                # Generate single consolidated PDF for attachment
+                pdf_path = self.reporter.generate_report(categorized, theme_summaries, "pdf")
+                self.delivery.send_html_with_pdf_attachment(report_path, pdf_path, recipients=all_recipients)
             else:
+                # For non-HTML formats, send the file directly
                 self.delivery.send_report(report_path)
         
         return report_path
     
-    def start_scheduler(self, time: str = "08:00", timezone: str = "UTC") -> None:
+    def start_scheduler(self, time: str = "06:00", timezone: str = "Asia/Singapore") -> None:
         """Start the daily scheduler"""
         self.scheduler.setup_daily_schedule(time, timezone)
         self.scheduler.start_scheduler()

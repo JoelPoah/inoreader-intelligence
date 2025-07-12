@@ -31,8 +31,8 @@ class Config:
     use_pagination: bool = False
     
     # Scheduling Configuration
-    report_time: str = "22:00"  # 6 AM SGT daily
-    timezone: str = "UTC"
+    report_time: str = "06:00"  # 6 AM SGT daily
+    timezone: str = "Asia/Singapore"
     
     @classmethod
     def from_env(cls) -> "Config":

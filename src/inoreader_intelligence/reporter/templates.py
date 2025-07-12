@@ -77,16 +77,36 @@ HTML_TEMPLATE = """
         .article-summary {
             color: #34495e;
             line-height: 1.8;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-left: 3px solid #3498db;
         }
-        .article-url {
+        .article-content {
+            color: #2c3e50;
+            line-height: 1.8;
+            margin-bottom: 15px;
+            padding: 10px;
+            background-color: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 4px;
+        }
+        .article-links {
             font-size: 0.9em;
             margin-top: 10px;
+            padding: 8px 0;
+            border-top: 1px solid #e9ecef;
         }
-        .article-url a {
+        .inoreader-link {
+            color: #27ae60;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .source-link {
             color: #3498db;
             text-decoration: none;
         }
-        .article-url a:hover {
+        .inoreader-link:hover, .source-link:hover {
             text-decoration: underline;
         }
         .footer {
@@ -140,13 +160,26 @@ HTML_TEMPLATE = """
         {% for article in theme_data.articles %}
         <div class="article">
             <div class="article-title">{{ loop.index }}. {{ article.title }}</div>
-            <div class="article-source"><strong>Source:</strong> {{ article.feed_title }}</div>
-            <div class="article-summary">{{ article.summary|safe }}</div>
-            {% if article.url %}
-            <div class="article-url">
-                <a href="{{ article.url }}" target="_blank">Read full article →</a>
+            <div class="article-source"><strong>Source:</strong> {{ article.feed_title }} | <strong>Published:</strong> {{ article.published }}</div>
+            
+            <div class="article-summary">
+                <strong>📊 Analysis:</strong><br>
+                {{ article.summary|safe }}
             </div>
-            {% endif %}
+            
+            <div class="article-content">
+                <strong>📄 Full Content:</strong><br>
+                {{ article.full_content|safe }}
+            </div>
+            
+            <div class="article-links">
+                {% if article.inoreader_url != article.url %}
+                <a href="{{ article.inoreader_url }}" target="_blank" class="inoreader-link">📖 View in Inoreader</a> |
+                {% endif %}
+                {% if article.url %}
+                <a href="{{ article.url }}" target="_blank" class="source-link">🔗 Original Source</a>
+                {% endif %}
+            </div>
         </div>
         {% endfor %}
         
