@@ -48,7 +48,7 @@ const rateLimitStore = new Map();
 
 // Rate limiting function
 function checkRateLimit(ip) {
-    const now = Date.now();
+    const now = Date.now();``
     const windowMs = parseInt(process.env.RATE_LIMIT_WINDOW_MS) || 15 * 60 * 1000; // 15 minutes
     const maxRequests = parseInt(process.env.RATE_LIMIT_MAX_REQUESTS) || 5;
     

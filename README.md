@@ -343,7 +343,7 @@ For issues and questions:
 # Setup and first run
 python3 run_example.py
 
-# Start daily 06:00 SGT scheduler
+# Start daily 06:00 SGT scheduler and sends daily reports
 python3 start_scheduler.py
 
 # Manual report generation

@@ -1,0 +1,172 @@
+#!/usr/bin/env python3
+"""
+Interactive starter script for Inoreader Intelligence
+Handles authentication and provides menu options for report generation
+"""
+
+import sys
+import os
+from pathlib import Path
+
+# Add src to path
+sys.path.insert(0, str(Path(__file__).parent / "src"))
+
+from inoreader_intelligence.main import InoreaderIntelligence
+from inoreader_intelligence.auth.oauth import InoreaderOAuth
+
+
+def print_banner():
+    """Print application banner"""
+    print("🚀 Inoreader Intelligence")
+    print("=" * 50)
+
+
+def print_menu():
+    """Print main menu options"""
+    print("\n📋 What would you like to do?")
+    print("1. Generate report now")
+    print("2. Start scheduled reports (daily at 6:00 AM SGT)")
+    print("3. Check authentication status")
+    print("4. Re-authenticate")
+    print("5. Exit")
+    print("-" * 30)
+
+
+def check_authentication(app):
+    """Check if authentication is valid"""
+    try:
+        # Try to load existing tokens
+        oauth = InoreaderOAuth(app.config)
+        if oauth.load_tokens() and oauth.is_authenticated():
+            print("✅ Authentication valid")
+            return True
+        else:
+            print("❌ Authentication required")
+            return False
+    except Exception as e:
+        print(f"❌ Authentication error: {e}")
+        return False
+
+
+def authenticate(app):
+    """Handle authentication flow"""
+    print("\n🔐 Authenticating with Inoreader...")
+    try:
+        app.setup()
+        print("✅ Authentication successful!")
+        return True
+    except Exception as e:
+        print(f"❌ Authentication failed: {e}")
+        print("\nTroubleshooting:")
+        print("1. Check your INOREADER_APP_ID and INOREADER_APP_KEY in .env")
+        print("2. Ensure you have proper internet connection")
+        print("3. Try deleting inoreader_token.json and re-authenticating")
+        return False
+
+
+def generate_report_now(app):
+    """Generate a report immediately"""
+    print("\n📊 Generating report...")
+    
+    # Ask about source
+    print("\nChoose article source:")
+    print("1. Focus folder (recommended)")
+    print("2. All unread articles")
+    source_choice = input("Enter choice (1-2): ").strip()
+    
+    use_focus_folder = source_choice != "2"
+    
+    # Ask about email sending
+    send_email = input("Send report via email? (y/n): ").lower().strip() == 'y'
+    
+    try:
+        report_path = app.generate_report(
+            format="html",
+            send_email=send_email,
+            use_focus_folder=use_focus_folder
+        )
+        print(f"✅ Report generated: {report_path}")
+        
+        if send_email:
+            print("📧 Report sent via email")
+        
+        return True
+    except Exception as e:
+        print(f"❌ Report generation failed: {e}")
+        return False
+
+
+def start_scheduler(app):
+    """Start the daily scheduler"""
+    print("\n⏰ Starting daily scheduler...")
+    print("Reports will be generated daily at 6:00 AM Singapore time")
+    print("Press Ctrl+C to stop the scheduler")
+    
+    try:
+        app.start_scheduler()
+    except KeyboardInterrupt:
+        print("\n⏹️  Scheduler stopped")
+    except Exception as e:
+        print(f"❌ Scheduler error: {e}")
+
+
+def main():
+    """Main interactive application"""
+    print_banner()
+    
+    try:
+        # Initialize the application
+        app = InoreaderIntelligence()
+        
+        # Check authentication status first
+        if not check_authentication(app):
+            print("\n🔐 Authentication required...")
+            if not authenticate(app):
+                print("❌ Cannot proceed without authentication")
+                sys.exit(1)
+        
+        # Main menu loop
+        while True:
+            print_menu()
+            
+            try:
+                choice = input("Enter your choice (1-5): ").strip()
+                
+                if choice == "1":
+                    generate_report_now(app)
+                
+                elif choice == "2":
+                    start_scheduler(app)
+                
+                elif choice == "3":
+                    check_authentication(app)
+                
+                elif choice == "4":
+                    # Force re-authentication by removing token file
+                    token_file = "inoreader_token.json"
+                    if os.path.exists(token_file):
+                        os.remove(token_file)
+                        print("🗑️  Removed existing authentication")
+                    authenticate(app)
+                
+                elif choice == "5":
+                    print("👋 Goodbye!")
+                    break
+                
+                else:
+                    print("❌ Invalid choice. Please select 1-5.")
+                
+            except KeyboardInterrupt:
+                print("\n👋 Goodbye!")
+                break
+            except Exception as e:
+                print(f"❌ Error: {e}")
+                continue
+    
+    except Exception as e:
+        print(f"❌ Fatal error: {e}")
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

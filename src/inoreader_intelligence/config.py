@@ -29,6 +29,7 @@ class Config:
     summary_max_length: int = 200
     max_daily_articles: int = 100
     use_pagination: bool = False
+    content_chunk_limit: int = 400  # Character limit for content chunks
     
     # Scheduling Configuration
     report_time: str = "06:00"  # 6 AM SGT daily
@@ -51,6 +52,7 @@ class Config:
             openai_model=os.getenv("OPENAI_MODEL", "gpt-4"),
             max_daily_articles=int(os.getenv("MAX_DAILY_ARTICLES", "100")),
             use_pagination=os.getenv("USE_PAGINATION", "false").lower() == "true",
+            content_chunk_limit=int(os.getenv("CONTENT_CHUNK_LIMIT", "400")),
         )
     
     def validate(self) -> None:

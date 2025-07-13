@@ -47,6 +47,10 @@ class InoreaderIntelligence:
                 use_pagination=self.config.use_pagination,
                 max_total_articles=self.config.max_daily_articles
             )
+            # Fallback to all unread articles if Focus folder is empty or not found
+            if not articles:
+                print("📰 Focus folder empty or not found, falling back to unread articles...")
+                articles = self.client.get_todays_articles(tag_ids)
         else:
             articles = self.client.get_todays_articles(tag_ids)
         

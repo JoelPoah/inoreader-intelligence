@@ -25,6 +25,8 @@ HTML_TEMPLATE = """
             height: auto;
             min-height: auto;
             overflow: visible;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         h1 {
             color: #2c3e50;
@@ -53,12 +55,7 @@ HTML_TEMPLATE = """
             line-height: 1.7;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            white-space: normal;
-            height: auto;
-            min-height: auto;
-            max-height: none;
-            overflow: visible;
-            display: block;
+            white-space: pre-wrap;
         }
         .theme-overview::before {
             content: "📊 STRATEGIC ANALYSIS";
@@ -74,6 +71,8 @@ HTML_TEMPLATE = """
             padding: 15px;
             border-left: 3px solid #bdc3c7;
             background-color: #fafafa;
+            overflow-wrap: break-word;
+            word-break: break-word;
         }
         .article-title {
             font-weight: bold;
@@ -94,9 +93,7 @@ HTML_TEMPLATE = """
             border-left: 3px solid #3498db;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            white-space: normal;
-            height: auto;
-            overflow: visible;
+            white-space: pre-wrap;
         }
         .article-content {
             color: #2c3e50;
@@ -108,9 +105,7 @@ HTML_TEMPLATE = """
             border-radius: 4px;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            white-space: normal;
-            height: auto;
-            overflow: visible;
+            white-space: pre-wrap;
         }
         .article-links {
             font-size: 0.9em;

@@ -49,6 +49,7 @@ class ReportGenerator:
         
         return text
     
+    
     def generate_report(self, categorized_articles: Dict[str, List[Article]], 
                        theme_summaries: Dict[str, str],
                        format: str = "html") -> str:
@@ -81,9 +82,12 @@ class ReportGenerator:
             # Prepare article data with summaries
             article_data = []
             for article in limited_articles:
+                # Convert markdown to HTML
+                html_summary = self._convert_markdown_to_html(article.summary or "No summary available")
+                
                 article_data.append({
                     "title": article.title,
-                    "summary": self._convert_markdown_to_html(article.summary or "No summary available"),
+                    "summary": html_summary,
                     "url": article.url,
                     "inoreader_url": article.get_inoreader_url(),
                     "feed_title": article.feed_title,
@@ -91,9 +95,12 @@ class ReportGenerator:
                     "author": article.author or "Unknown"
                 })
             
+            # Handle theme overview
+            theme_overview_html = self._convert_markdown_to_html(theme_summaries.get(theme_name, ""))
+            
             themes[theme_name] = {
                 "articles": article_data,
-                "overview": self._convert_markdown_to_html(theme_summaries.get(theme_name, "")),
+                "overview": theme_overview_html,
                 "emoji": self.THEME_EMOJIS.get(theme_name, "📄")
             }
         
