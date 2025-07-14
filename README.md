@@ -12,6 +12,10 @@ A Python application that generates daily intelligence reports from your RSS fee
 - **⏰ Singapore Time Scheduling**: Daily automated reports at 06:00 SGT
 - **🎯 Focus Folder Optimization**: Efficiently processes only your curated Focus folder feeds
 - **🔗 Inoreader Integration**: Direct links to view full articles in your Inoreader account
+- **🌐 Web App Integration**: Public web application for email subscriptions with MongoDB storage
+- **📊 Combined Recipients**: Merges web subscribers with configured email recipients automatically
+- **💳 Stripe Donations**: Optional donation system to support operational costs
+- **🛡️ Security & Rate Limiting**: Enterprise-grade security with CORS, rate limiting, and input validation
 
 ## 📊 Intelligence Themes
 
@@ -34,6 +38,8 @@ The system categorizes articles into these military/intelligence analytical them
 - OpenAI API key (for AI analysis and categorization)
 - Email account for report delivery
 - Focus folder setup in your Inoreader account
+- **MongoDB Atlas** (optional, for web subscriber management)
+- **Stripe Account** (optional, for donation functionality)
 
 ## 🎯 How the Focus Folder System Works
 
@@ -220,6 +226,24 @@ USE_PAGINATION=true
 MAX_DAILY_ARTICLES=300
 ```
 
+### Web Subscriber Integration
+
+For public web app integration, add these environment variables:
+```env
+# MongoDB for web subscribers (optional)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/strategic-intelligence
+
+# Stripe for donations (optional)
+STRIPE_SECRET_KEY=sk_test_your_secret_key_here
+STRIPE_PUBLISHABLE_KEY=pk_test_your_publishable_key_here
+```
+
+With MongoDB configured, the system will automatically:
+- ✅ **Fetch web subscribers** from your MongoDB database
+- ✅ **Combine recipients** with your configured email list
+- ✅ **Deduplicate emails** to avoid duplicate sends
+- ✅ **Handle connection failures** gracefully (falls back to config recipients)
+
 ## 📊 Report Structure
 
 Each intelligence report includes:
@@ -258,12 +282,56 @@ inoreader-intelligence/
 │   ├── summarizer/        # AI analysis engine
 │   ├── reporter/          # Report generation
 │   ├── scheduler/         # Daily scheduling
+│   ├── web_subscribers.py # MongoDB web subscriber integration
 │   └── main.py           # Main application
-├── requirements.txt       # Dependencies
+├── web/                   # Web application for public subscriptions
+│   ├── public/           # Frontend (HTML, CSS, JS)
+│   ├── api/              # Backend API endpoints
+│   └── package.json      # Web app dependencies
+├── requirements.txt       # Python dependencies
 ├── .env.example          # Configuration template
 ├── run_example.py        # Quick start script
+├── WEB_APP_SETUP.md      # Web app deployment guide
 └── README.md            # This file
 ```
+
+## 🌐 Web App Deployment (Optional)
+
+Deploy a public web application for email subscriptions and donations:
+
+### Quick Web App Setup
+
+1. **Deploy the web app** (see [WEB_APP_SETUP.md](WEB_APP_SETUP.md) for detailed instructions):
+   ```bash
+   # Deploy frontend to Vercel
+   cd web && vercel --prod
+   
+   # Deploy backend to Railway
+   railway login && railway up
+   ```
+
+2. **Configure MongoDB connection** in your Python `.env`:
+   ```env
+   MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/strategic-intelligence
+   ```
+
+3. **Test the integration**:
+   ```bash
+   python3 -c "
+   from src.inoreader_intelligence.web_subscribers import WebSubscriberManager
+   from src.inoreader_intelligence.config import Config
+   manager = WebSubscriberManager(Config.from_env())
+   print(f'Web subscribers: {len(manager.get_web_subscribers())}')
+   "
+   ```
+
+### Web App Features
+
+- 📧 **Email Collection**: Public signup form with MongoDB storage
+- 💳 **Stripe Donations**: Optional $5 donations to support costs
+- 🛡️ **Security**: Rate limiting, CORS protection, input validation
+- 📊 **Analytics**: Subscriber statistics and donation tracking
+- 🔗 **API Integration**: Seamless connection with Python report system
 
 ## 🔒 Security Features
 
