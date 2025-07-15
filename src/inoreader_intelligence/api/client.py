@@ -21,9 +21,14 @@ class InoreaderClient:
         self.oauth = InoreaderOAuth(config)
         self.session = requests.Session()
         
-    def authenticate(self) -> None:
+    def authenticate(self, interactive: bool = True) -> None:
         """Authenticate with Inoreader"""
-        self.oauth.authenticate_interactive()
+        if interactive:
+            self.oauth.authenticate_interactive()
+        else:
+            success = self.oauth.authenticate_automatic()
+            if not success:
+                raise ValueError("Automatic authentication failed. Please re-authenticate manually.")
         
     def _make_request(self, endpoint: str, params: Optional[Dict[str, Any]] = None) -> Dict[str, Any]:
         """Make authenticated request to Inoreader API"""

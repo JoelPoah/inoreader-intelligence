@@ -55,7 +55,32 @@ HTML_TEMPLATE = """
             line-height: 1.7;
             word-wrap: break-word;
             overflow-wrap: break-word;
-            white-space: pre-wrap;
+        }
+        .theme-overview h2, .theme-overview h3, .theme-overview h4 {
+            color: #2c3e50;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .theme-overview h2 {
+            font-size: 1.2em;
+            border-bottom: 2px solid #27ae60;
+            padding-bottom: 5px;
+        }
+        .theme-overview h3 {
+            font-size: 1.1em;
+            color: #34495e;
+        }
+        .theme-overview h4 {
+            font-size: 1.05em;
+            color: #34495e;
+        }
+        .theme-overview ul {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .theme-overview li {
+            margin-bottom: 8px;
+            list-style-type: disc;
         }
         .theme-overview::before {
             content: "📊 STRATEGIC ANALYSIS";

@@ -29,7 +29,7 @@ def setup():
         config.validate()
         
         client = InoreaderClient(config)
-        client.authenticate()
+        client.authenticate(interactive=True)
         
         # Test connection
         user_info = client.get_user_info()

@@ -53,6 +53,10 @@ class ReportScheduler:
         print(f"Starting daily report generation at {datetime.now()}")
         
         try:
+            # Ensure authentication is valid
+            print("🔐 Checking authentication...")
+            self.client.authenticate(interactive=False)
+            
             # Fetch articles
             if use_focus_folder and not tag_ids:
                 print("Fetching articles from Focus folder...")
@@ -119,6 +123,9 @@ class ReportScheduler:
             
         except Exception as e:
             print(f"Error generating daily report: {e}")
+            # If authentication failed, provide helpful message
+            if "authentication" in str(e).lower():
+                print("💡 Authentication failed. Please run './start' and choose option 4 to re-authenticate.")
             raise
     
     def run_once(self, tag_ids: Optional[List[str]] = None) -> str:

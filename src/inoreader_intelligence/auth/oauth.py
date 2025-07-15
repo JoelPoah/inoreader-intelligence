@@ -67,18 +67,36 @@ class InoreaderOAuth:
             "grant_type": "refresh_token"
         }
         
-        response = requests.post(self.TOKEN_URL, data=data)
-        response.raise_for_status()
-        
-        token_data = response.json()
-        self.access_token = token_data["access_token"]
-        if "refresh_token" in token_data:
-            self.refresh_token = token_data["refresh_token"]
-        
-        # Save updated tokens
-        self.save_tokens(token_data)
-        
-        return token_data
+        try:
+            response = requests.post(self.TOKEN_URL, data=data, timeout=30)
+            response.raise_for_status()
+            
+            token_data = response.json()
+            self.access_token = token_data["access_token"]
+            if "refresh_token" in token_data:
+                self.refresh_token = token_data["refresh_token"]
+            
+            # Save updated tokens
+            self.save_tokens(token_data)
+            
+            return token_data
+        except requests.exceptions.HTTPError as e:
+            if e.response.status_code == 400:
+                # Refresh token is invalid/expired
+                print("🔄 Refresh token expired, clearing tokens...")
+                self.clear_tokens()
+                raise ValueError("Refresh token expired. Manual re-authentication required.")
+            else:
+                raise ValueError(f"Token refresh failed: {e}")
+        except requests.exceptions.RequestException as e:
+            raise ValueError(f"Network error during token refresh: {e}")
+    
+    def clear_tokens(self) -> None:
+        """Clear stored tokens"""
+        self.access_token = None
+        self.refresh_token = None
+        if os.path.exists(self.token_file):
+            os.remove(self.token_file)
     
     def save_tokens(self, token_data: Dict[str, Any]) -> None:
         """Save tokens to file"""
@@ -142,3 +160,46 @@ class InoreaderOAuth:
                 raise
         else:
             raise ValueError("No authorization code provided")
+    
+    def authenticate_automatic(self) -> bool:
+        """Automatic authentication flow for scheduled tasks"""
+        try:
+            # Try to load existing tokens
+            if self.load_tokens():
+                # Check if we can make a test request to validate the token
+                if self.is_token_valid():
+                    print("✅ Using existing valid tokens")
+                    return True
+                else:
+                    print("🔄 Tokens expired, attempting refresh...")
+                    # Try to refresh the token
+                    self.refresh_access_token()
+                    if self.is_token_valid():
+                        print("✅ Token refreshed successfully")
+                        return True
+                    else:
+                        print("❌ Token refresh failed")
+                        return False
+            else:
+                print("❌ No existing tokens found")
+                return False
+        except Exception as e:
+            print(f"❌ Authentication error: {e}")
+            return False
+    
+    def is_token_valid(self) -> bool:
+        """Test if the current token is valid by making a test API call"""
+        if not self.access_token:
+            return False
+        
+        try:
+            # Make a simple API call to test the token
+            headers = self.get_auth_headers()
+            response = requests.get(
+                "https://www.inoreader.com/reader/api/0/user-info",
+                headers=headers,
+                timeout=10
+            )
+            return response.status_code == 200
+        except Exception:
+            return False

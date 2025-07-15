@@ -28,17 +28,22 @@ class InoreaderIntelligence:
         self.scheduler = ReportScheduler(self.config)
         self.web_subscribers = WebSubscriberManager(self.config)
     
-    def setup(self) -> None:
+    def setup(self, interactive: bool = True) -> None:
         """Set up the application"""
         self.config.validate()
-        self.client.authenticate()
+        self.client.authenticate(interactive=interactive)
     
     def generate_report(self, 
                        tag_ids: Optional[List[str]] = None,
                        format: str = "html",
                        send_email: bool = False,
-                       use_focus_folder: bool = True) -> str:
+                       use_focus_folder: bool = True,
+                       interactive: bool = True) -> str:
         """Generate a single report"""
+        
+        # Ensure authentication is valid
+        if not self.client.oauth.is_authenticated():
+            self.client.authenticate(interactive=interactive)
         
         # Fetch articles
         if use_focus_folder and not tag_ids:

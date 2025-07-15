@@ -19,15 +19,44 @@ class SummarizationEngine:
         if config.openai_api_key:
             self.client = OpenAI(api_key=config.openai_api_key)
     
+    def _format_markdown_to_html(self, text: str) -> str:
+        """Convert basic markdown formatting to HTML"""
+        # Convert headers
+        text = re.sub(r'^#### (.*?)$', r'<h4>\1</h4>', text, flags=re.MULTILINE)
+        text = re.sub(r'^### (.*?)$', r'<h3>\1</h3>', text, flags=re.MULTILINE)
+        text = re.sub(r'^## (.*?)$', r'<h2>\1</h2>', text, flags=re.MULTILINE)
+        
+        # Convert bullet points
+        text = re.sub(r'^- (.*?)$', r'<li>\1</li>', text, flags=re.MULTILINE)
+        
+        # Wrap consecutive <li> items in <ul>
+        text = re.sub(r'(<li>.*?</li>)\n?(?=<li>)', r'\1', text, flags=re.DOTALL)
+        text = re.sub(r'(<li>.*?</li>(?:\n<li>.*?</li>)*)', r'<ul>\1</ul>', text, flags=re.DOTALL)
+        
+        # Convert **bold** to <strong>
+        text = re.sub(r'\*\*(.*?)\*\*', r'<strong>\1</strong>', text)
+        
+        # Convert *italic* to <em>
+        text = re.sub(r'\*(.*?)\*', r'<em>\1</em>', text)
+        
+        # Convert line breaks to <br>
+        text = text.replace('\n', '<br>')
+        
+        return text
+    
     def summarize_article(self, article: Article) -> str:
         """Generate a summary for a single article"""
         if not self.client:
             # Fallback to simple text truncation if no OpenAI key
             return self._truncate_text(article.content or article.summary, self.config.summary_max_length)
         
-        content = article.content or article.summary
+        # Check if article already has a summary
+        if article.summary:
+            return article.summary
+        
+        content = article.content
         if not content:
-            return "No content available for summarization."
+            return "No content"
         
         # Truncate content if too long
         if len(content) > 4000:
@@ -46,8 +75,8 @@ class SummarizationEngine:
                         "content": f"Title: {article.title}\n\nContent: {content}"
                     }
                 ],
-                max_tokens=400,
-                temperature=0.3
+                max_tokens=1000,
+                temperature=0
             )
             
             return response.choices[0].message.content.strip()
@@ -220,11 +249,12 @@ class SummarizationEngine:
                         "content": summaries_text
                     }
                 ],
-                max_tokens=500,
-                temperature=0.3
+                max_tokens=1500,
+                temperature=0
             )
             
-            return response.choices[0].message.content.strip()
+            formatted_content = self._format_markdown_to_html(response.choices[0].message.content.strip())
+            return formatted_content
         except Exception as e:
             print(f"Error generating theme summary for {theme}: {e}")
             return f"Theme: {theme} - {len(articles)} articles covering recent developments."

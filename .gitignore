@@ -2,3 +2,4 @@
 venv
 intelligence_report**
 .env.production
+*inoreader_token.json
