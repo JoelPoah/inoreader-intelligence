@@ -425,21 +425,9 @@ python3 -c "from src.inoreader_intelligence import InoreaderIntelligence; app = 
 - Scheduled for Singapore timezone operations
 
 
-Backend Deployment (Railway):
-  cd /home/joel/Inoreader/backend
-  railway login
-  railway link
-  railway up
-
   Frontend Deployment (Vercel):
-  cd /home/joel/Inoreader/frontend/strategic-intelligence
+  cd /inoreader-intelligence
   vercel --prod
-
-  Environment Variables:
-  After deployment, set these in Railway dashboard:
-  - MONGODB_URI
-  - STRIPE_SECRET_KEY
-  - NODE_ENV=production
 
   And in Vercel dashboard:
   - REACT_APP_API_URL (Railway backend URL)
