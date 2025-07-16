@@ -52,7 +52,7 @@ class WebSubscriberManager:
             print("💡 Continuing with configured email recipients only")
             return []
             
-        if not self.collection:
+        if self.collection is None:
             print("❌ MongoDB connection not available. Cannot fetch web subscribers.")
             print("💡 Continuing with configured email recipients only")
             return []
@@ -100,7 +100,7 @@ class WebSubscriberManager:
             print("❌ PyMongo not available for testing connection")
             return False
             
-        if not self.client:
+        if self.client is None:
             print("❌ MongoDB client not initialized")
             return False
             
@@ -109,7 +109,7 @@ class WebSubscriberManager:
             self.client.admin.command('ping')
             
             # Try to count documents in emails collection
-            if self.collection:
+            if self.collection is not None:
                 count = self.collection.count_documents({})
                 print(f"✅ MongoDB connection successful. Total emails in database: {count}")
                 return True
@@ -123,7 +123,7 @@ class WebSubscriberManager:
     
     def get_subscriber_stats(self) -> dict:
         """Get subscriber statistics from MongoDB"""
-        if not self.collection:
+        if self.collection is None:
             return {
                 "total": 0,
                 "active": 0,
@@ -161,6 +161,6 @@ class WebSubscriberManager:
     
     def close_connection(self):
         """Close MongoDB connection"""
-        if self.client:
+        if self.client is not None:
             self.client.close()
             print("🔐 MongoDB connection closed")

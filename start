@@ -33,11 +33,11 @@ def print_menu():
 
 
 def check_authentication(app):
-    """Check if authentication is valid"""
+    """Check if authentication is valid, attempt automatic refresh if needed"""
     try:
-        # Try to load existing tokens
+        # Try automatic authentication (includes token refresh)
         oauth = InoreaderOAuth(app.config)
-        if oauth.load_tokens() and oauth.is_authenticated():
+        if oauth.authenticate_automatic():
             print("✅ Authentication valid")
             return True
         else:
@@ -51,10 +51,14 @@ def check_authentication(app):
 def authenticate(app):
     """Handle authentication flow"""
     print("\n🔐 Authenticating with Inoreader...")
+    
     try:
+        # Use interactive authentication
+        print("\n👤 Using interactive authentication...")
         app.setup()
         print("✅ Authentication successful!")
         return True
+            
     except Exception as e:
         print(f"❌ Authentication failed: {e}")
         print("\nTroubleshooting:")
